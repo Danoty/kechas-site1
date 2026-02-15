@@ -3,6 +3,14 @@ document.documentElement.classList.add('js');
 const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+
+// service worker (offline + faster repeat visits)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+
 // theme (persist)
 const root = document.documentElement;
 const savedTheme = localStorage.getItem("theme");
@@ -539,4 +547,283 @@ Kindly confirm availability and total cost.`;
       if (e.key === "Escape" && lb.classList.contains("show")) lbClose?.click();
     });
   }
+})();
+
+
+// ---------- Premium UX additions (progress, back-to-top, action dock, quote modal) ----------
+(function(){
+  const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Scroll progress bar
+  function ensureProgressBar(){
+    if (document.getElementById("scrollProgress")) return;
+    const bar = document.createElement("div");
+    bar.id = "scrollProgress";
+    bar.setAttribute("aria-hidden","true");
+    document.body.appendChild(bar);
+
+    const update = () => {
+      const doc = document.documentElement;
+      const max = (doc.scrollHeight - doc.clientHeight) || 1;
+      const pct = Math.min(1, Math.max(0, (window.scrollY || doc.scrollTop) / max));
+      bar.style.transform = `scaleX(${pct})`;
+    };
+    update();
+    window.addEventListener("scroll", update, { passive:true });
+    window.addEventListener("resize", update);
+  }
+
+  // Back to top
+  function ensureBackToTop(){
+    if (document.getElementById("backToTop")) return;
+    const btn = document.createElement("button");
+    btn.id = "backToTop";
+    btn.type = "button";
+    btn.className = "back-to-top";
+    btn.setAttribute("aria-label","Back to top");
+    btn.innerHTML = "↑";
+    document.body.appendChild(btn);
+
+    const toggle = () => {
+      const show = (window.scrollY || document.documentElement.scrollTop) > 700;
+      btn.classList.toggle("show", show);
+    };
+    toggle();
+    window.addEventListener("scroll", toggle, { passive:true });
+    btn.addEventListener("click", () => window.scrollTo({ top:0, behavior: prefersReduced ? "auto":"smooth" }));
+  }
+
+  // Action dock (WhatsApp / Call / Quote)
+  function ensureActionDock(){
+    if (document.getElementById("actionDock")) return;
+
+    const phone = "+254722403413";
+    const tel = "tel:+254722403413";
+
+    const wrap = document.createElement("div");
+    wrap.id = "actionDock";
+    wrap.className = "action-dock";
+
+    wrap.innerHTML = `
+      <button type="button" class="dock-fab" aria-haspopup="dialog" aria-expanded="false" aria-controls="dockPanel" id="dockFab">
+        <span class="dock-fab__spark" aria-hidden="true"></span>
+        <span class="dock-fab__label">Quick actions</span>
+        <span class="dock-fab__icon" aria-hidden="true">✦</span>
+      </button>
+      <div class="dock-panel" id="dockPanel" role="dialog" aria-label="Quick actions">
+        <a class="dock-item" href="https://wa.me/254722403413" target="_blank" rel="noopener" aria-label="WhatsApp Kechas Agencies">
+          <span aria-hidden="true">💬</span><span>WhatsApp</span>
+        </a>
+        <a class="dock-item" href="${tel}" aria-label="Call Kechas Agencies">
+          <span aria-hidden="true">📞</span><span>Call</span>
+        </a>
+        <button class="dock-item" type="button" id="openQuote" aria-label="Get a quote">
+          <span aria-hidden="true">🧾</span><span>Get a quote</span>
+        </button>
+      </div>
+    `;
+    document.body.appendChild(wrap);
+
+    const fab = wrap.querySelector("#dockFab");
+    const panel = wrap.querySelector("#dockPanel");
+    const openBtn = wrap.querySelector("#openQuote");
+
+    function closeDock(){
+      panel.classList.remove("show");
+      fab.setAttribute("aria-expanded","false");
+    }
+    function toggleDock(){
+      const next = !panel.classList.contains("show");
+      panel.classList.toggle("show", next);
+      fab.setAttribute("aria-expanded", String(next));
+      if (next) panel.querySelector("a,button")?.focus();
+    }
+
+    fab.addEventListener("click", toggleDock);
+    document.addEventListener("click", (e) => {
+      if (!wrap.contains(e.target)) closeDock();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeDock();
+    });
+
+    openBtn.addEventListener("click", () => {
+      closeDock();
+      window.openQuoteModal?.();
+    });
+  }
+
+  // Quote modal (prefilled WhatsApp message)
+  function ensureQuoteModal(){
+    if (document.getElementById("quoteModal")) return;
+
+    const modal = document.createElement("div");
+    modal.id = "quoteModal";
+    modal.className = "modal";
+    modal.setAttribute("role","dialog");
+    modal.setAttribute("aria-modal","true");
+    modal.setAttribute("aria-labelledby","quoteTitle");
+    modal.setAttribute("hidden","");
+
+    modal.innerHTML = `
+      <div class="modal__backdrop" data-close="1"></div>
+      <div class="modal__panel" role="document">
+        <div class="modal__head">
+          <h2 id="quoteTitle">Get a fast quote</h2>
+          <button type="button" class="icon-btn" aria-label="Close" data-close="1">✕</button>
+        </div>
+        <p class="modal__sub">Fill this in once — we’ll open WhatsApp with a ready message.</p>
+
+        <form class="quote-form" id="quoteForm">
+          <div class="grid2">
+            <label>
+              <span>Your name</span>
+              <input name="q_name" autocomplete="name" required placeholder="e.g., Daniel" />
+            </label>
+            <label>
+              <span>Phone number</span>
+              <input name="q_phone" autocomplete="tel" inputmode="tel" required placeholder="e.g., 07xx xxx xxx" />
+            </label>
+          </div>
+
+          <div class="grid2">
+            <label>
+              <span>Service</span>
+              <select name="q_service" required>
+                <option value="" selected disabled>Select a service</option>
+                <option>Airport Transfer</option>
+                <option>Corporate Transport</option>
+                <option>Car Hire / Rental</option>
+                <option>Car Leasing</option>
+                <option>Tour / Safari</option>
+                <option>Chauffeur Service</option>
+                <option>Logistics / Delivery</option>
+              </select>
+            </label>
+            <label>
+              <span>Date & time</span>
+              <input name="q_datetime" type="datetime-local" />
+            </label>
+          </div>
+
+          <div class="grid2">
+            <label>
+              <span>Pick-up location</span>
+              <input name="q_pickup" autocomplete="street-address" required placeholder="e.g., Kisumu Airport" />
+            </label>
+            <label>
+              <span>Destination</span>
+              <input name="q_drop" required placeholder="e.g., CBD / Hotel / Office" />
+            </label>
+          </div>
+
+          <label>
+            <span>Extra details</span>
+            <textarea name="q_notes" rows="3" placeholder="Passengers, luggage, vehicle preference, special requests…"></textarea>
+          </label>
+
+          <div class="modal__actions">
+            <button type="submit" class="btn btn-primary shimmer">Open WhatsApp</button>
+            <a class="btn btn-ghost" href="contact.html">Contact form</a>
+          </div>
+
+          <p class="fineprint">No account needed. Response typically within minutes (business hours).</p>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    let lastFocus = null;
+    function open(){
+      lastFocus = document.activeElement;
+      modal.removeAttribute("hidden");
+      modal.classList.add("show");
+      document.body.classList.add("modal-open");
+      modal.querySelector("input,select,textarea,button")?.focus();
+    }
+    function close(){
+      modal.classList.remove("show");
+      document.body.classList.remove("modal-open");
+      window.setTimeout(()=> modal.setAttribute("hidden",""), prefersReduced ? 0 : 160);
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    window.openQuoteModal = open;
+
+    modal.addEventListener("click", (e) => {
+      const closeEl = e.target.closest("[data-close='1']");
+      if (closeEl) close();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (modal.hasAttribute("hidden")) return;
+      if (e.key === "Escape") close();
+      // simple focus trap
+      if (e.key === "Tab"){
+        const focusables = Array.from(modal.querySelectorAll("a,button,input,select,textarea,[tabindex]:not([tabindex='-1'])"))
+          .filter(el => !el.hasAttribute("disabled"));
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length-1];
+        if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+      }
+    });
+
+    const form = modal.querySelector("#quoteForm");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const msg =
+`Hello Kechas Agencies,
+Name: ${data.get("q_name")}
+Phone: ${data.get("q_phone")}
+Service: ${data.get("q_service")}
+Date/Time: ${data.get("q_datetime") || "—"}
+Pick-up: ${data.get("q_pickup")}
+Destination: ${data.get("q_drop")}
+Details: ${data.get("q_notes") || "—"}
+`;
+      const text = encodeURIComponent(msg);
+      window.open(`https://wa.me/254722403413?text=${text}`, "_blank", "noopener");
+      close();
+    });
+  }
+
+  // Active nav highlight (current page)
+  function setActiveNav(){
+    const path = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+    document.querySelectorAll("nav a[href]").forEach(a => {
+      const href = (a.getAttribute("href") || "").toLowerCase();
+      if (!href || href.startsWith("http")) return;
+      const normalized = href === "" ? "index.html" : href;
+      a.classList.toggle("is-active", normalized === path || (path === "" && normalized === "index.html"));
+    });
+  }
+
+  // Improve mobile menu: ESC closes, focus management
+  function enhanceMenu(){
+    const menuBtn = document.getElementById("menuBtn");
+    const menu = document.getElementById("menu");
+    if (!menuBtn || !menu) return;
+
+    function close(){ menu.classList.remove("show"); menuBtn.setAttribute("aria-expanded","false"); }
+    function open(){ menu.classList.add("show"); menuBtn.setAttribute("aria-expanded","true"); menu.querySelector("a")?.focus(); }
+
+    menuBtn.setAttribute("aria-expanded", menu.classList.contains("show") ? "true":"false");
+    menuBtn.addEventListener("click", () => (menu.classList.contains("show") ? close() : open()));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+    document.addEventListener("click", (e) => {
+      if (!menu.contains(e.target) && !menuBtn.contains(e.target)) close();
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    ensureProgressBar();
+    ensureBackToTop();
+    ensureActionDock();
+    ensureQuoteModal();
+    setActiveNav();
+    enhanceMenu();
+  });
 })();
