@@ -1412,3 +1412,136 @@ header > *:not(.hero-media),
   .hero-media{ background: var(--grad-hero); }
 }
 
+
+
+
+/* =========================================================
+   KECHAS — SUPERB DESIGN REBALANCE (REDUCE WASTED SPACE)
+   Applies across ALL pages without breaking existing layout.
+   ========================================================= */
+
+:root{
+  --content-max: 1240px;
+  --content-pad: clamp(14px, 2.2vw, 26px);
+  --section-pad: clamp(28px, 4.2vw, 64px);
+  --gap: clamp(12px, 2vw, 22px);
+}
+
+/* Make containers wider + consistent */
+.container{
+  width: min(var(--content-max), 94%);
+  margin-inline: auto;
+}
+
+/* Reduce excessive whitespace in sections (global) */
+section{
+  padding-block: var(--section-pad) !important;
+}
+
+/* Tighter headings spacing */
+h1{ margin: 0 0 14px 0; }
+h2{ margin: 0 0 12px 0; }
+h3{ margin: 0 0 10px 0; }
+p{ margin: 0 0 12px 0; }
+
+/* Keep readability but reduce max width slightly on wide screens */
+p, li, .text, .content, .container p{
+  max-width: 68ch;
+}
+
+/* Better line-height balance for readability + density */
+body{ line-height: 1.55; }
+
+/* Universal image rules: prevent tiny images + remove weird gaps */
+img, video{
+  display:block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make images in cards/tiles fill the width (fix “wasted space”) */
+.card img,
+.service-card img,
+.fleet-card img,
+.pricing-card img,
+.blog-card img,
+.gallery img,
+figure img{
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+}
+
+/* If an image sits in a fixed-height tile, crop nicely */
+.card .media img,
+.media img,
+.fleet-card img{
+  object-fit: cover;
+}
+
+/* Modern responsive grids: auto-fit where possible */
+.grid, .cards, .card-grid, .services-grid, .fleet-grid, .pricing-grid, .blog-grid, .gallery-grid{
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+  gap: var(--gap) !important;
+  align-items: stretch;
+}
+
+/* Tighten card padding a bit */
+.card, .service-card, .fleet-card, .pricing-card, .blog-card, .panel{
+  padding: clamp(14px, 2.2vw, 20px) !important;
+}
+
+/* Prevent giant empty areas under hero */
+.hero, header, .hero-section, .banner, .page-hero{
+  padding-block: clamp(38px, 6vw, 92px) !important;
+}
+
+/* Balance list spacing */
+ul, ol{ padding-left: 1.1rem; }
+li{ margin-bottom: 8px; }
+
+/* Improve layout density on large screens */
+@media (min-width: 1024px){
+  .two-col, .split, .columns, .hero-content{
+    display:grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(18px, 2.6vw, 34px);
+    align-items:center;
+  }
+}
+
+/* Reduce whitespace in footer */
+footer{
+  padding-block: clamp(22px, 3.5vw, 44px) !important;
+}
+
+/* Make buttons and controls not oversized */
+button, .btn, .button, input[type="submit"], .cta, .cta-btn{
+  padding: 11px 20px !important;
+}
+
+/* Subtle section separators to reduce “empty feeling” */
+section{
+  position: relative;
+}
+section::after{
+  content:"";
+  position:absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(880px, 90%);
+  height: 1px;
+  background: rgba(15, 23, 42, 0.06);
+}
+.hero::after, header::after, .hero-section::after, .banner::after, .page-hero::after{
+  display:none;
+}
+
+/* Keep WhatsApp green ALWAYS */
+.whatsapp, .whatsapp-btn, .quick-whatsapp, .wa, .btn-whatsapp, a[href*="wa.me"], a[href*="whatsapp.com"]{
+  background: #25D366 !important;
+  color: #fff !important;
+}
+
