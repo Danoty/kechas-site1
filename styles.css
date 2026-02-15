@@ -603,3 +603,20 @@ footer{
 .whatsapp-float:hover, .whatsapp-btn:hover{
   filter: brightness(1.05);
 }
+
+
+/* Floating WhatsApp button */
+.wa-float{
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  z-index:999;
+  padding:12px 14px;
+  border-radius:999px;
+  background:var(--brand, #0b4aa2);
+  color:#fff;
+  font-weight:700;
+  text-decoration:none;
+  box-shadow:0 10px 25px rgba(0,0,0,.18);
+}
+.wa-float:hover{ transform:translateY(-1px); }

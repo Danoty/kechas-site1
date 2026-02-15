@@ -424,3 +424,18 @@ Kindly confirm availability and total cost.`;
     window.location.href = `mailto:kesachagencies@gmail.com?subject=${subject}&body=${body}`;
   });
 })();
+
+
+// Email obfuscation
+(function(){
+  const links = Array.from(document.querySelectorAll('.js-email-link'));
+  if (!links.length) return;
+  links.forEach(a => {
+    const user = a.getAttribute('data-user');
+    const domain = a.getAttribute('data-domain');
+    if (!user || !domain) return;
+    const email = `${user}@${domain}`;
+    a.href = `mailto:${email}`;
+    if (!a.textContent || a.textContent.includes('[at]')) a.textContent = email;
+  });
+})();
