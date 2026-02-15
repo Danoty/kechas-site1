@@ -603,3 +603,5 @@ footer{
 .whatsapp-float:hover, .whatsapp-btn:hover{
   filter: brightness(1.05);
 }
+
+.whatsapp-btn{background:var(--whatsapp);color:#fff}
