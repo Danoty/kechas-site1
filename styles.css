@@ -1061,3 +1061,232 @@ html {
 .glow {
     box-shadow: 0 0 15px rgba(255, 81, 47, 0.7);
 }
+
+
+
+/* =========================================================
+   KECHAS — BEST COLORS + READABILITY UPGRADE (GLOBAL TIER)
+   - High contrast text, vibrant but professional palette
+   - Consistent across ALL pages
+   - WhatsApp remains official green
+   ========================================================= */
+
+:root{
+  /* Base */
+  --bg: #0b1220;                 /* deep navy for hero/nav */
+  --surface: #ffffff;            /* card surface */
+  --surface-2: #f6f8ff;          /* soft tinted background */
+  --surface-3: #f2fbff;          /* alternate */
+  --text: #0f172a;               /* slate-900 */
+  --muted: #475569;              /* slate-600 */
+  --border: rgba(15, 23, 42, 0.10);
+
+  /* Brand accents (vibrant but readable) */
+  --primary: #2563eb;            /* blue-600 */
+  --primary-2: #0ea5e9;          /* sky-500 */
+  --teal: #14b8a6;               /* teal-500 */
+  --coral: #f97316;              /* orange-500 */
+  --gold: #fbbf24;               /* amber-400 */
+  --rose: #fb7185;               /* rose-400 */
+
+  /* Gradients */
+  --grad-hero: radial-gradient(1200px circle at 20% 10%, rgba(20,184,166,.35), transparent 60%),
+               radial-gradient(900px circle at 80% 20%, rgba(37,99,235,.35), transparent 55%),
+               radial-gradient(700px circle at 60% 90%, rgba(249,115,22,.25), transparent 55%),
+               linear-gradient(135deg, #0b1220 0%, #0b1733 40%, #0b1220 100%);
+
+  --grad-cta: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 45%, var(--teal) 100%);
+  --grad-cta-hover: linear-gradient(135deg, #1d4ed8 0%, #0284c7 45%, #0f766e 100%);
+
+  /* Shadows */
+  --shadow-sm: 0 6px 18px rgba(2, 6, 23, 0.10);
+  --shadow-md: 0 14px 30px rgba(2, 6, 23, 0.14);
+  --shadow-lg: 0 22px 60px rgba(2, 6, 23, 0.18);
+
+  /* Radius */
+  --r-sm: 14px;
+  --r-md: 18px;
+  --r-lg: 24px;
+
+  /* Focus */
+  --focus: 0 0 0 4px rgba(37,99,235,.25);
+}
+
+/* Global typography readability */
+html{ scroll-behavior:smooth; }
+body{
+  background: var(--surface-2);
+  color: var(--text);
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Make text blocks readable */
+p, li, .text, .content, .container p{
+  max-width: 72ch;
+}
+
+/* Consistent link styling */
+a{
+  color: var(--primary);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+a:hover{
+  color: #1d4ed8;
+}
+
+/* Headings: colorful but readable (no low-contrast gradients on plain sections) */
+h1, h2, h3, h4{
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+/* Add an accent underline bar */
+h1::after, h2::after{
+  content:"";
+  display:block;
+  width: 72px;
+  height: 6px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary), var(--teal), var(--coral));
+  opacity: .9;
+}
+
+/* Hero / header sections: rich gradient + white text */
+.hero, header, .hero-section, .banner, .page-hero{
+  background: var(--grad-hero) !important;
+  color: #fff !important;
+}
+.hero *, header *, .hero-section *, .banner *, .page-hero *{
+  color: #fff !important;
+}
+
+/* Add subtle sparkle (not noisy) */
+.hero::before, header::before, .hero-section::before, .banner::before, .page-hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.55) 40%, transparent 41%),
+    radial-gradient(2px 2px at 70% 25%, rgba(255,255,255,.45) 40%, transparent 41%),
+    radial-gradient(2px 2px at 80% 65%, rgba(255,255,255,.40) 40%, transparent 41%),
+    radial-gradient(2px 2px at 35% 75%, rgba(255,255,255,.35) 40%, transparent 41%);
+  opacity:.25;
+}
+.hero, header, .hero-section, .banner, .page-hero{ position:relative; overflow:hidden; }
+
+/* Sections: alternate gentle backgrounds */
+main section:nth-of-type(odd),
+section:nth-of-type(odd){
+  background: var(--surface);
+}
+main section:nth-of-type(even),
+section:nth-of-type(even){
+  background: linear-gradient(180deg, var(--surface-2), var(--surface-3));
+}
+section{
+  border-top: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+/* Cards */
+.card, .service-card, .fleet-card, .pricing-card, .blog-card, .faq-item, .testimonial, .panel{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
+}
+.card:hover, .service-card:hover, .fleet-card:hover, .pricing-card:hover, .blog-card:hover, .panel:hover{
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Buttons: vibrant gradient */
+button, .btn, .button, input[type="submit"], .cta, .cta-btn{
+  background: var(--grad-cta) !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  padding: 12px 22px !important;
+  font-weight: 700 !important;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+}
+button:hover, .btn:hover, .button:hover, input[type="submit"]:hover, .cta:hover, .cta-btn:hover{
+  background: var(--grad-cta-hover) !important;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-md);
+  filter: saturate(1.06);
+}
+button:focus-visible, .btn:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{
+  outline: none !important;
+  box-shadow: var(--focus) !important;
+  border-radius: 12px;
+}
+
+/* Form readability */
+input, textarea, select{
+  background: #fff !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(15, 23, 42, 0.18) !important;
+  border-radius: 14px !important;
+  padding: 12px 14px !important;
+}
+input::placeholder, textarea::placeholder{ color: rgba(71,85,105,.85) !important; }
+
+/* Navbar: premium dark with accent hover */
+nav, .navbar, .topnav{
+  background: rgba(11,18,32,.92) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+nav a, .navbar a, .topnav a{
+  color: rgba(255,255,255,.92) !important;
+  text-decoration: none;
+}
+nav a:hover, .navbar a:hover, .topnav a:hover{
+  color: var(--gold) !important;
+}
+
+/* Footer: dark + readable */
+footer{
+  background: linear-gradient(90deg, #070b14, #0b1220, #070b14) !important;
+  color: rgba(255,255,255,.92) !important;
+}
+footer a{ color: var(--gold) !important; }
+
+/* Badges / highlights */
+.badge, .tag, .pill{
+  background: linear-gradient(90deg, rgba(20,184,166,.18), rgba(37,99,235,.14));
+  border: 1px solid rgba(20,184,166,.25);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-weight: 600;
+}
+
+/* Keep WhatsApp green ALWAYS */
+.whatsapp, .whatsapp-btn, .quick-whatsapp, .wa, .btn-whatsapp, a[href*="wa.me"], a[href*="whatsapp.com"]{
+  background: #25D366 !important;
+  color: #fff !important;
+}
+.whatsapp:hover, .whatsapp-btn:hover, .quick-whatsapp:hover, .btn-whatsapp:hover,
+a[href*="wa.me"]:hover, a[href*="whatsapp.com"]:hover{
+  filter: brightness(0.96) saturate(1.1);
+}
+
+/* Make small text more readable */
+small, .small, .meta, .muted{
+  color: var(--muted) !important;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+  .card:hover, .service-card:hover, .fleet-card:hover, .pricing-card:hover, .blog-card:hover{ transform:none !important; }
+}
+
