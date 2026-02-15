@@ -439,3 +439,104 @@ Kindly confirm availability and total cost.`;
     if (!a.textContent || a.textContent.includes('[at]')) a.textContent = email;
   });
 })();
+
+
+/* -------------------------------------------------------
+   World-class UX enhancements (lightweight, no deps)
+--------------------------------------------------------*/
+(function(){
+  // Skip link + main target
+  const header = document.querySelector("header");
+  const firstMain = document.querySelector("main") || document.querySelector("[role='main']") ||
+                    (header ? header.nextElementSibling : null);
+  if (firstMain && !firstMain.id) firstMain.id = "main";
+  if (!document.querySelector(".skip-link")) {
+    const a = document.createElement("a");
+    a.className = "skip-link";
+    a.href = "#main";
+    a.textContent = "Skip to content";
+    document.body.prepend(a);
+  }
+
+  // Scroll progress
+  const prog = document.createElement("div");
+  prog.className = "scroll-progress";
+  prog.innerHTML = "<span></span>";
+  document.body.appendChild(prog);
+  const bar = prog.querySelector("span");
+  const updateProgress = () => {
+    const h = document.documentElement;
+    const max = Math.max(1, h.scrollHeight - h.clientHeight);
+    const v = Math.min(1, Math.max(0, h.scrollTop / max));
+    bar.style.transform = `scaleX(${v})`;
+  };
+  updateProgress();
+  document.addEventListener("scroll", updateProgress, { passive:true });
+
+  // Back to top
+  const topBtn = document.createElement("button");
+  topBtn.className = "to-top";
+  topBtn.type = "button";
+  topBtn.setAttribute("aria-label", "Back to top");
+  topBtn.innerHTML = "↑";
+  document.body.appendChild(topBtn);
+  topBtn.addEventListener("click", () => window.scrollTo({ top:0, behavior:"smooth" }));
+  const toggleTop = () => topBtn.classList.toggle("show", window.scrollY > 700);
+  toggleTop();
+  document.addEventListener("scroll", toggleTop, { passive:true });
+
+  // Floating quick actions (Call / WhatsApp / Email)
+  if (!document.querySelector(".fab")) {
+    const fab = document.createElement("div");
+    fab.className = "fab";
+    fab.innerHTML = `
+      <button class="fab-btn" type="button" aria-expanded="false" aria-label="Quick actions">✦</button>
+      <div class="fab-menu" aria-hidden="true">
+        <a class="fab-item" href="tel:+254722403413" aria-label="Call 0722 403 413">📞 Call</a>
+        <a class="fab-item" href="https://wa.me/254722403413" target="_blank" rel="noopener" aria-label="WhatsApp">💬 WhatsApp</a>
+        <a class="fab-item js-email-link" data-user="kesachagencies" data-domain="gmail.com" href="#" aria-label="Email">✉️ Email</a>
+      </div>`;
+    document.body.appendChild(fab);
+
+    const btn = fab.querySelector(".fab-btn");
+    const menu = fab.querySelector(".fab-menu");
+    const close = () => {
+      btn.setAttribute("aria-expanded","false");
+      menu.setAttribute("aria-hidden","true");
+      fab.classList.remove("open");
+    };
+    btn.addEventListener("click", () => {
+      const open = !fab.classList.contains("open");
+      fab.classList.toggle("open", open);
+      btn.setAttribute("aria-expanded", String(open));
+      menu.setAttribute("aria-hidden", String(!open));
+    });
+    document.addEventListener("click", (e) => {
+      if (!fab.contains(e.target)) close();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") close();
+    });
+  }
+
+  // Email de-obfuscation / click handler
+  document.querySelectorAll(".js-email-link").forEach(a => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const user = a.getAttribute("data-user");
+      const domain = a.getAttribute("data-domain");
+      if (!user || !domain) return;
+      const addr = `${user}@${domain}`;
+      window.location.href = `mailto:${addr}`;
+    });
+  });
+
+  // Improve lightbox accessibility (ESC, focus)
+  const lb = document.getElementById("lightbox");
+  const lbClose = document.getElementById("lightboxClose");
+  if (lb){
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && lb.classList.contains("show")) lbClose?.click();
+    });
+  }
+})();
